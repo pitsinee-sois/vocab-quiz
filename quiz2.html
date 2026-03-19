@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>Vocabulary Quiz</title>
+
+<style>
+body {
+  font-family: "Segoe UI", sans-serif;
+  background: #f4f6f9;
+  padding: 30px;
+}
+
+.container {
+  max-width: 1000px;
+  margin: auto;
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 25px;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.word {
+  width: 180px;
+  font-weight: 500;
+}
+
+input {
+  flex: 1;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.correct { color: green; font-weight: bold; }
+.wrong { color: red; font-weight: bold; }
+
+.buttons {
+  text-align: center;
+  margin-top: 20px;
+}
+
+button {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  background: #4CAF50;
+  color: white;
+  cursor: pointer;
+  margin: 5px;
+}
+
+button:hover {
+  background: #45a049;
+}
+
+#result {
+  text-align: center;
+  font-size: 18px;
+  margin-top: 15px;
+}
+</style>
+
+</head>
+<body>
+
+<div class="container">
+
+<h2 id="title">Vocabulary Quiz - Page 1</h2>
+
+<div id="quiz" class="grid"></div>
+
+<div class="buttons">
+  <button onclick="submitPage()">Submit</button>
+  <button onclick="nextPage()">Next Page</button>
+</div>
+
+<p id="result"></p>
+
+</div>
+
+<script>
+
+// ===== PAGE 1 =====
+const page1 = [
+["accept","ยอมรับ"],["set up","สร้าง / จัดตั้ง"],["review","ทบทวน"],["build","สร้าง"],
+["reply","ตอบกลับ"],["plan","วางแผนงาน"],["refund","ขอคืน"],["mark off","ลากเส้นแบ่งเขต"],
+["comply","กระทำตามที่กำหนดไว้"],["ensure","รับรอง / ทำให้มั่นใจ"],
+["amend","แก้ไข (เอกสาร)"],["guarantee","รับประกัน"],["delay","ล่าช้า"],
+["check","ตรวจสอบ"],["design","ออกแบบ"],["support","ช่วยเหลือ / สนับสนุน"],
+["approve","อนุมัติ"],["provide","จัดหา / เตรียมการ"],["ban","ห้าม"],
+["sequence","จัดลำดับ"],["order","สั่ง"],["calculate","คำนวณ"],
+["control","ควบคุม"],["tap-off","อุปกรณ์แยกสัญญาณทีวี"],
+["heat detector","อุปกรณ์ตรวจจับความร้อน"],
+["smoke detector","อุปกรณ์ตรวจจับควัน"],
+["capacitor","อุปกรณ์เก็บประจุไฟฟ้า"],
+["interlock","อุปกรณ์เชื่อมต่อกัน"],
+["acknowledge","รับทราบ"],["cooling towers","หอระบายความร้อน"],
+["receive","รับ"],["restroom","ห้องน้ำ"],["request","ร้องขอ"],
+["toilet","ห้องน้ำ"],["handover","การส่งมอบงาน"],
+["confirm","ยืนยัน"],["lug","ห่วงปลายสายไฟ"],
+["embed","ฝัง"],["fluorescent lamp","หลอดฟลูออเรสเซนต์"],
+["announce","ประกาศ"],["environment","สิ่งแวดล้อม"],
+["include","รวม"],["site office","สำนักงานหน้างาน"],
+["perform","ดำเนินการ"],["solvent","สารละลาย"],
+["photo record","บันทึกภาพ"],["lightning arrester","สายล่อฟ้า"],
+["charge","ประจุ"],["variation order","เปลี่ยนแปลงสัญญา"],
+["damage","เสียหาย"],["contract","สัญญา"],
+["conform","ทำตาม"],["neat and clean","สะอาดเรียบร้อย"],
+["test","ทดสอบ"],["switch","สวิตช์"],
+["transfer","โอน"],["discount","ส่วนลด"]
+];
+
+// ===== PAGE 2 =====
+const page2 = [
+["follow up","ติดตาม"],["cash flow","สภาพคล่อง"],
+["signature","ลายเซ็น"],["vacation","ลาพักร้อน"],
+["sick leave","ลาป่วย"],["courtyard","ลาน"],
+["yard","ลาน"],["crate","ลัง"],["recess","ฝัง"],
+["catalogue","แคตตาล็อก"],["utilize","ใช้ประโยชน์"],
+["type","ประเภท"],["display","แสดง"],
+["detail","รายละเอียด"],["exclude","ไม่รวม"],
+["minute of meeting","รายงานประชุม"],
+["rectify","แก้ไข"],["staff","พนักงาน"],
+["revise","ปรับปรุง"],["edit","แก้ไข"],
+["agree","เห็นด้วย"],["renovation","ปรับปรุง"],
+["connect","เชื่อมต่อ"],["ladder way","ทางบันได"],
+["join","เชื่อม"],["catwalk","ทางเดินแคบ"],
+["monitor","ตรวจสอบ"],["report","รายงาน"],
+["entrance","ทางเข้า"],["protection tools","อุปกรณ์ป้องกัน"],
+["skill","ทักษะ"],["corridor","ทางเดิน"],
+["fixture","อุปกรณ์ติดตั้ง"],["span","ช่วง"],
+["period","ช่วงเวลา"],["insulation","ฉนวน"],
+["destination","ปลายทาง"],["objective","จุดประสงค์"],
+["thickness","ความหนา"],["equipment","อุปกรณ์"],
+["ability","ความสามารถ"],["device","อุปกรณ์"],
+["depth","ความลึก"],["industry","อุตสาหกรรม"],
+["progress","ความก้าวหน้า"],["headache","ปวดหัว"],
+["adequacy","ความเพียงพอ"],["duty stamp","อากรแสตมป์"],
+["interface","ความเชื่อมโยง"],["hazard","อันตราย"],
+["morale","ขวัญกำลังใจ"],["current","กระแสไฟ"],
+["scale","ขนาด"],["in-process","อยู่ระหว่างดำเนินการ"],
+["activity","กิจกรรม"]
+];
+
+// ===== PAGE 3 =====
+const page3 = [
+["future","อนาคต"],["vibration","การสั่น"],
+["inquiry","การสอบถาม"],["preservation","การเก็บรักษา"],
+["lamp","หลอดไฟ"],["transformer","หม้อแปลง"],
+["safety helmet","หมวกนิรภัย"],["facemask","หน้ากาก"],
+["mask","หน้ากาก"],["watt","วัตต์"],
+["ampere","แอมป์"],["footwear","รองเท้า"],
+["barrier","สิ่งกีดขวาง"],["barricade","สิ่งกีดขวาง"],
+["temporary cable","สายไฟชั่วคราว"],["cable","สายไฟ"],
+["fiber optic","ใยแก้วนำแสง"],["telephone line","สายโทรศัพท์"],
+["facility","สิ่งอำนวยความสะดวก"],["utility","สาธารณูปโภค"],
+["logo","โลโก้"],["symbol","สัญลักษณ์"],
+["fire alarm","สัญญาณเตือนไฟ"],
+["welfare","สวัสดิการ"],["lawn","สนามหญ้า"],
+["architect","สถาปนิก"],["substation","สถานีไฟฟ้าย่อย"],
+["status","สถานะ"],["storage","ที่เก็บ"],
+["location","สถานที่"],["site","สถานที่"],
+["method","วิธีการ"],["solution","วิธีแก้"],
+["material","วัสดุ"],["due date","วันครบกำหนด"],
+["client","ลูกค้า"],["customer","ลูกค้า"],
+["speaker","ลำโพง"],["description","รายละเอียด"],
+["raceway","รางสายไฟ"],["system","ระบบ"],
+["code","รหัส"]
+];
+
+// ===== PAGE 4 =====
+const page4 = [
+["standard","มาตรฐาน"],["withholding tax","ภาษีหัก ณ ที่จ่าย"],
+["VAT","ภาษีมูลค่าเพิ่ม"],["emergency","ฉุกเฉิน"],
+["fuse","ฟิวส์"],["surface","พื้นผิว"],
+["smoking area","พื้นที่สูบบุหรี่"],["slope","พื้นที่ลาดเอียง"],
+["work area","พื้นที่ทำงาน"],["ventilation fans","พัดลมระบายอากาศ"],
+["instructor","ผู้สอน"],["sub-contractor","ผู้รับเหมาช่วง"],
+["assistant","ผู้ช่วย"],["supplier","ผู้จัดหา"],
+["vendor","ผู้ขาย"],["product","สินค้า"],
+["analysis","การวิเคราะห์"],["safety warning sign","ป้ายเตือน"],
+["plug","ปลั๊ก"],["receptacle","เต้ารับ"],
+["sleeve","ปลอก"],["bushing","ปลอก"],
+["experience","ประสบการณ์"],["president","ประธาน"],
+["daily","รายวัน"],["category","ประเภท"],
+["primary","หลัก"],["manhole","บ่อพักใหญ่"],
+["handhole","บ่อพักเล็ก"],["fuel","เชื้อเพลิง"],
+["oxygen","ออกซิเจน"],["dormitory","หอพัก"],
+["duct","ท่อ"],["pipe","ท่อ"],
+["asset","ทรัพย์สิน"],["glove","ถุงมือ"],
+["tray","ถาด"],["cabinet","ตู้"],
+["panel","แผง"],["position","ตำแหน่ง"],
+["schedule","ตารางเวลา"]
+];
+
+// ===== PAGE 5 =====
+const page5 = [
+["pre-check","ตรวจสอบก่อน"],["post-check","ตรวจสอบหลัง"],
+["cost","ต้นทุน"],["original","ต้นฉบับ"],
+["soil","ดิน"],["working cloth","ชุดทำงาน"],
+["amount","จำนวนเงิน"],["quantity","จำนวน"],
+["monitor","จอ"],["mechanic","เครื่องกล"],
+["painting work","งานสี"],["foundation","ฐานราก"],
+["civil","โยธา"],["budget","งบประมาณ"],
+["manual","คู่มือ"],["duplicate","สำเนา"],
+["quality","คุณภาพ"],["instruction","คำสั่ง"],
+["commission","ค่านายหน้า"],["compensation","ค่าชดเชย"],
+["wage","ค่าแรง"],["expense","ค่าใช้จ่าย"],
+["rent","ค่าเช่า"],["knowledge","ความรู้"],
+["flexibility","ยืดหยุ่น"],["satisfaction","พอใจ"],
+["security","ความปลอดภัย"],["safety","ความปลอดภัย"],
+["behavior","พฤติกรรม"],["reliability","ความน่าเชื่อถือ"],
+["frequency","ความถี่"],["requirement","ความต้องการ"],
+["shortage","ขาดแคลน"],["person in charge","ผู้รับผิดชอบ"],
+["driver","คนขับ"],["committee","คณะกรรมการ"],
+["output","ขาออก"],["input","ขาเข้า"],
+["terminal","ขั้ว"],["procedure","ขั้นตอน"]
+];
+
+// ===== PAGE 6 =====
+const page6 = [
+["defect","ข้อบกพร่อง"],["specification","ข้อกำหนด"],
+["torque","แรงบิด"],["manpower","กำลังคน"],
+["profit","กำไร"],["shutdown","หยุดระบบ"],
+["seminar","สัมมนา"],["education","การศึกษา"],
+["measure","การวัด"],["resignation","ลาออก"],
+["implement","ดำเนินการ"],["punishment","ลงโทษ"],
+["leakage","รั่ว"],["medical treatment","รักษา"],
+["explosion","ระเบิด"],["summary","สรุป"],
+["confirmation","ยืนยัน"],["elevation","ยกสูง"],
+["corrosion","สนิม"],["production","การผลิต"],
+["prevention","ป้องกัน"],["improvement","ปรับปรุง"],
+["estimate","ประเมิน"],["meeting","ประชุม"],
+["fabrication","ประกอบ"],["first aid","ปฐมพยาบาล"],
+["coordination","ประสานงาน"],["clean-up","ทำความสะอาด"],
+["probation","ทดลองงาน"],["tracking","ติดตาม"],
+["installation","ติดตั้ง"],["communication","สื่อสาร"],
+["grounding","ต่อดิน"],["inspection","ตรวจสอบ"],
+["maintenance","ซ่อมบำรุง"],["payment","ชำระเงิน"],
+["delivery","ส่งสินค้า"],["management","บริหาร"]
+];
+
+// ===== PAGE 7 =====
+const page7 = [
+["construction","ก่อสร้าง"],["service","บริการ"],
+["operation","ใช้งาน"],["usage","การใช้"],
+["conversion","แปลงหน่วย"],["quotation","เสนอราคา"],
+["project","โครงการ"],["factory","โรงงาน"],
+["diagram","แผนภาพ"],["department","แผนก"],
+["drawing","แบบ"],["concept","แนวคิด"],
+["guest","แขก"],["document","เอกสาร"],
+["steel","เหล็ก"],["risk","ความเสี่ยง"],
+["pole","เสา"],["completion","เสร็จ"],
+["route","เส้นทาง"],["curve","โค้ง"],
+["ceiling","เพดาน"],["flame","เปลวไฟ"],
+["socket","เต้ารับ"],["outlet","เต้ารับ"],
+["rope","เชือก"],["owner","เจ้าของ"],
+["salary","เงินเดือน"],["tools","เครื่องมือ"],
+["machine","เครื่องจักร"],["uniform","เครื่องแบบ"],
+["blower","เครื่องเป่าลม"],["strap","สายรัด"],
+["obligation","ภาระผูกพัน"],["benefit","ผลประโยชน์"],
+["commitment","คำมั่น"],["freight","ค่าขนส่ง"],
+["depreciation","ค่าเสื่อม"]
+];
+
+// ===== PAGE 8 =====
+const page8 = [
+["conclusion","สรุป"],["export","ส่งออก"],
+["registration","ลงทะเบียน"],["import","นำเข้า"],
+["advertisement","โฆษณา"],["application","ใบสมัคร"],
+["retention money","เงินประกัน"],
+["generator","เครื่องกำเนิดไฟ"],
+["actively","คล่องแคล่ว"],
+["suitability","เหมาะสม"],
+["strictly","เคร่งครัด"],
+["incoming","ขาเข้า"],
+["indoor","ในอาคาร"],
+["inner","ภายใน"],
+["weekly","รายสัปดาห์"],
+["annual","รายปี"],
+["monthly","รายเดือน"],
+["outdoor","กลางแจ้ง"],
+["underground","ใต้ดิน"],
+["existing","เดิม"],
+["common","ทั่วไป"],
+["visible","มองเห็น"],
+["proper","เหมาะสม"],
+["horizontal","แนวนอน"],
+["vertical","แนวตั้ง"],
+["electrical","ไฟฟ้า"],
+["economics","เศรษฐศาสตร์"]
+];
+
+
+// ===== CONTROL =====
+let currentPage = 1;
+let submitted = false;
+let totalScore = 0;
+let totalQuestions = 0;
+let wrongList = [];
+
+// 🔥 เลือกหน้า
+function getPageData(){
+  if(currentPage === 1) return page1;
+  if(currentPage === 2) return page2;
+  if(currentPage === 3) return page3;
+  if(currentPage === 4) return page4;
+  if(currentPage === 5) return page5;
+  if(currentPage === 6) return page6;
+  if(currentPage === 7) return page7;
+  return page8;
+}
+
+// ===== LOAD =====
+function loadPage(){
+  let vocab = getPageData();
+
+  document.getElementById("title").innerText =
+    "Vocabulary Quiz - Page " + currentPage;
+
+  let html = "";
+
+  vocab.forEach((v,i)=>{
+    html += `
+    <div class="item">
+      <div class="word">${i+1}. ${v[0]} =</div>
+      <input id="q${i}">
+      <span id="fb${i}"></span>
+    </div>`;
+  });
+
+  document.getElementById("quiz").innerHTML = html;
+  document.getElementById("result").innerText = "";
+  submitted = false;
+}
+
+// ===== CHECK =====
+function similar(a,b){
+  return a.includes(b) || b.includes(a);
+}
+
+function submitPage(){
+  if(submitted) return;
+
+  let vocab = getPageData();
+  let score = 0;
+
+  vocab.forEach((v,i)=>{
+    let ans = document.getElementById("q"+i).value.trim();
+    let fb = document.getElementById("fb"+i);
+
+    totalQuestions++;
+
+    if(similar(ans,v[1])){
+      score++;
+      totalScore++;
+      fb.innerHTML="✔";
+      fb.className="correct";
+    }else{
+      fb.innerHTML="✘ ("+v[1]+")";
+      fb.className="wrong";
+
+      wrongList.push({
+        word: v[0],
+        correct: v[1],
+        your: ans || "-"
+      });
+    }
+  });
+
+  document.getElementById("result").innerText =
+    "Page "+currentPage+" Score: "+score+"/"+vocab.length;
+
+  submitted = true;
+}
+
+// ===== NEXT =====
+function nextPage(){
+  if(!submitted){
+    alert("กรุณากด Submit ก่อน");
+    return;
+  }
+
+  if(currentPage < 8){
+    currentPage++;
+    loadPage();
+  }else{
+    finishExam();
+  }
+}
+
+// ===== FINISH =====
+function finishExam(){
+  let percent = (totalScore / totalQuestions) * 100;
+
+  let wrongHTML = "";
+
+  if(wrongList.length > 0){
+    wrongHTML += "<h3>ข้อที่ตอบผิด:</h3>";
+    wrongList.forEach((w,i)=>{
+      wrongHTML += `
+      <p>${i+1}. ${w.word} = ❌ (${w.your}) → ✔ ${w.correct}</p>`;
+    });
+  } else {
+    wrongHTML = "<h3>ตอบถูกหมด 🔥</h3>";
+  }
+
+  document.getElementById("quiz").innerHTML = `
+    <h2 style="text-align:center;">สอบเสร็จ 🎉</h2>
+    <p style="text-align:center;font-size:20px;">
+      Total Score: ${totalScore}/${totalQuestions}
+      (${percent.toFixed(1)}%)
+    </p>
+    ${wrongHTML}
+  `;
+}
+
+// start
+loadPage();
+
+
+</script>
+
+</body>
+</html>
