@@ -63,6 +63,7 @@ button:hover { background: #45a049; }
   <button onclick="submitPage()">Submit</button>
   <button onclick="nextPage()">Next Page</button>
   <button onclick="restartPage()">Redo Page</button>
+  <button onclick="resetAll()">เริ่มใหม่ทั้งหมด</button>
 </div>
 
 <p id="result"></p>
@@ -441,31 +442,21 @@ const page8 = [
 ["economics","เศรษฐศาสตร์"]
 ];
 
+// ===== รวมทุกหน้าไว้ในตัวเดียว =====
+const pages = [page1, page2, page3, page4, page5, page6, page7, page8];
 
 // ===== CONTROL =====
-let currentPage = 1;
+let currentPage = 0;
 let submitted = false;
 let totalScore = 0;
-let totalQuestions = 0;
 let wrongList = [];
-
-function getPageData(){
-  if(currentPage === 1) return page1;
-  if(currentPage === 2) return page2;
-  if(currentPage === 3) return page3;
-  if(currentPage === 4) return page4;
-  if(currentPage === 5) return page5;
-  if(currentPage === 6) return page6;
-  if(currentPage === 7) return page7;
-  return page8;
-}
 
 // ===== LOAD =====
 function loadPage(){
-  let vocab = getPageData();
+  let vocab = pages[currentPage];
 
   document.getElementById("title").innerText =
-    "Vocabulary Quiz - Page " + currentPage;
+    "Vocabulary Quiz - Page " + (currentPage + 1);
 
   let html = "";
 
@@ -494,14 +485,12 @@ function similar(a,b){
 function submitPage(){
   if(submitted) return;
 
-  let vocab = getPageData();
+  let vocab = pages[currentPage];
   let score = 0;
 
   vocab.forEach((v,i)=>{
     let ans = document.getElementById("q"+i).value.trim();
     let fb = document.getElementById("fb"+i);
-
-    totalQuestions++;
 
     if(similar(ans,v[1])){
       score++;
@@ -521,7 +510,7 @@ function submitPage(){
   });
 
   document.getElementById("result").innerText =
-    "Page "+currentPage+" Score: "+score+"/"+vocab.length;
+    "Page "+(currentPage+1)+" Score: "+score+"/"+vocab.length;
 
   submitted = true;
 }
@@ -533,7 +522,7 @@ function nextPage(){
     return;
   }
 
-  if(currentPage < 8){ // ✅ แก้ตรงนี้
+  if(currentPage < pages.length - 1){
     currentPage++;
     loadPage();
   }else{
@@ -541,25 +530,54 @@ function nextPage(){
   }
 }
 
-// ===== REDO หน้าเดิม =====
+// ===== REDO =====
 function restartPage(){
+  if(submitted){
+    totalScore -= pages[currentPage].length;
+  }
+
+  wrongList = [];
+
   submitted = false;
+  loadPage();
+}
+
+// ===== RESET ALL =====
+function resetAll(){
+  currentPage = 0;
+  totalScore = 0;
+  wrongList = [];
   loadPage();
 }
 
 // ===== FINISH =====
 function finishExam(){
-  let percent = (totalScore / totalQuestions) * 100;
+  let total = pages.reduce((sum,p)=> sum + p.length, 0);
+  let percent = (totalScore / total) * 100;
+
+  let wrongHTML = "";
+
+  if(wrongList.length > 0){
+    wrongHTML += "<h3>ข้อที่ตอบผิด:</h3>";
+    wrongList.forEach((w,i)=>{
+      wrongHTML += `<p>${i+1}. ${w.word} → ${w.your} ❌ → ${w.correct}</p>`;
+    });
+  } else {
+    wrongHTML = "<h3>ตอบถูกหมด 🔥</h3>";
+  }
 
   document.getElementById("quiz").innerHTML = `
     <h2>เสร็จแล้ว 🎉</h2>
-    <p>คะแนน: ${totalScore}/${totalQuestions} (${percent.toFixed(1)}%)</p>
+    <p>คะแนน: ${totalScore}/${total} (${percent.toFixed(1)}%)</p>
+    ${wrongHTML}
   `;
 }
 
-// ===== ENTER = SUBMIT =====
-document.addEventListener("keypress", function(e){
-  if(e.key === "Enter"){
+
+// ===== ENTER FIX =====
+document.addEventListener("keydown", function(e){
+  if(e.key === "Enter" && !submitted){
+    e.preventDefault();
     submitPage();
   }
 });
