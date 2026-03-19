@@ -10,7 +10,6 @@ body {
   background: #f4f6f9;
   padding: 30px;
 }
-
 .container {
   max-width: 1000px;
   margin: auto;
@@ -19,70 +18,43 @@ body {
   border-radius: 12px;
   box-shadow: 0 5px 20px rgba(0,0,0,0.1);
 }
-
-h2 {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
+h2 { text-align: center; }
 .grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px 25px;
 }
-
 .item {
   display: flex;
   align-items: center;
   gap: 10px;
 }
-
-.word {
-  width: 180px;
-  font-weight: 500;
-}
-
+.word { width: 180px; }
 input {
   flex: 1;
-  padding: 6px 8px;
+  padding: 6px;
   border-radius: 6px;
   border: 1px solid #ccc;
 }
-
-.correct { color: green; font-weight: bold; }
-.wrong { color: red; font-weight: bold; }
-
-.buttons {
-  text-align: center;
-  margin-top: 20px;
-}
-
+.correct { color: green; }
+.wrong { color: red; }
+.buttons { text-align: center; margin-top: 20px; }
 button {
   padding: 10px 18px;
-  border: none;
   border-radius: 8px;
   background: #4CAF50;
   color: white;
-  cursor: pointer;
+  border: none;
   margin: 5px;
+  cursor: pointer;
 }
-
-button:hover {
-  background: #45a049;
-}
-
-#result {
-  text-align: center;
-  font-size: 18px;
-  margin-top: 15px;
-}
+button:hover { background: #45a049; }
 </style>
-
 </head>
+
 <body>
 
 <div class="container">
-
 <h2 id="title">Vocabulary Quiz - Page 1</h2>
 
 <div id="quiz" class="grid"></div>
@@ -90,10 +62,10 @@ button:hover {
 <div class="buttons">
   <button onclick="submitPage()">Submit</button>
   <button onclick="nextPage()">Next Page</button>
+  <button onclick="restartPage()">Redo Page</button>
 </div>
 
 <p id="result"></p>
-
 </div>
 
 <script>
@@ -477,7 +449,6 @@ let totalScore = 0;
 let totalQuestions = 0;
 let wrongList = [];
 
-// 🔥 เลือกหน้า
 function getPageData(){
   if(currentPage === 1) return page1;
   if(currentPage === 2) return page2;
@@ -562,7 +533,7 @@ function nextPage(){
     return;
   }
 
-  if(currentPage < 8){
+  if(currentPage < 8){ // ✅ แก้ตรงนี้
     currentPage++;
     loadPage();
   }else{
@@ -570,35 +541,31 @@ function nextPage(){
   }
 }
 
+// ===== REDO หน้าเดิม =====
+function restartPage(){
+  submitted = false;
+  loadPage();
+}
+
 // ===== FINISH =====
 function finishExam(){
   let percent = (totalScore / totalQuestions) * 100;
 
-  let wrongHTML = "";
-
-  if(wrongList.length > 0){
-    wrongHTML += "<h3>ข้อที่ตอบผิด:</h3>";
-    wrongList.forEach((w,i)=>{
-      wrongHTML += `
-      <p>${i+1}. ${w.word} = ❌ (${w.your}) → ✔ ${w.correct}</p>`;
-    });
-  } else {
-    wrongHTML = "<h3>ตอบถูกหมด 🔥</h3>";
-  }
-
   document.getElementById("quiz").innerHTML = `
-    <h2 style="text-align:center;">สอบเสร็จ 🎉</h2>
-    <p style="text-align:center;font-size:20px;">
-      Total Score: ${totalScore}/${totalQuestions}
-      (${percent.toFixed(1)}%)
-    </p>
-    ${wrongHTML}
+    <h2>เสร็จแล้ว 🎉</h2>
+    <p>คะแนน: ${totalScore}/${totalQuestions} (${percent.toFixed(1)}%)</p>
   `;
 }
 
+// ===== ENTER = SUBMIT =====
+document.addEventListener("keypress", function(e){
+  if(e.key === "Enter"){
+    submitPage();
+  }
+});
+
 // start
 loadPage();
-
 
 </script>
 
